@@ -21,12 +21,12 @@ def receive_sensor(data: dict):
     save_to_db(data, risk)   
 
     vibrate = True if risk == "EMERGENCY" else False
-
+    message = "Emergency detected! Sending help signal" if risk == "EMERGENCY" else "No emergency. You are safe"
     return {
         "risk_level": risk,
         "alert": vibrate,
         "vibration": vibrate,
-        "message": "Emergency detected! Sending help signal"
+        "message": message
     }
 
 @router.get("/digital_twin")
