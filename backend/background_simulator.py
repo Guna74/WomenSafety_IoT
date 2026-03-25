@@ -2,8 +2,10 @@ import asyncio
 import time
 import random
 import requests
+import os
 
-LOCAL_SENSOR_URL = "http://127.0.0.1:8000/sensor"
+PORT = os.getenv("PORT", "8000")
+LOCAL_SENSOR_URL = f"http://127.0.0.1:{PORT}/sensor"
 
 class SimulatorConfig:
     enabled = True
