@@ -3,7 +3,19 @@ from api.routes import router
 from database.init_db import init_db
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Women Safety IoT Backend")
+import asyncio
+from background_simulator import run_simulator
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start the simulator when the app spins up
+    task = asyncio.create_task(run_simulator())
+    yield
+    # Shutdown simulator
+    task.cancel()
+
+app = FastAPI(title="Women Safety IoT Backend", lifespan=lifespan)
 
 init_db()
 

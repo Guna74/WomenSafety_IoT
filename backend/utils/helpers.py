@@ -23,28 +23,37 @@ def save_to_db(data, risk):
     conn.commit()
     conn.close()
 
-
-def get_history():
+def get_history(limit=50):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
-    cur.execute("""
-    SELECT heart_rate, temperature, motion, risk 
-    FROM data ORDER BY id DESC LIMIT 20
-    """)
-    
+    cur.execute("SELECT heart_rate, temperature, motion, risk, timestamp FROM data ORDER BY id DESC LIMIT ?", (limit,))
     rows = cur.fetchall()
     conn.close()
 
-    return [
-        {
-            "heart_rate": r[0],
-            "temperature": r[1],
-            "motion": r[2],
-            "risk": r[3]
-        }
-        for r in rows
-    ]
+    return [{"heart_rate": r[0], "temperature": r[1], "motion": r[2], "risk": r[3], "timestamp": r[4]} for r in rows]
+
+def get_aggregated_history(period="hours"):
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+
+    if period == "hours":
+        sql = "SELECT strftime('%Y-%m-%d %H:00', timestamp) as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 24"
+    elif period == "days":
+        sql = "SELECT strftime('%Y-%m-%d', timestamp) as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 30"
+    elif period == "weeks":
+        sql = "SELECT strftime('%Y-%W', timestamp) as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 12"
+    else:
+        conn.close()
+        return []
+
+    cur.execute(sql)
+    rows = cur.fetchall()
+    conn.close()
+    
+    # Reverse to return oldest first for charts natively
+    result = [{"time": r[0], "heart_rate": round(r[1], 1), "motion": round(r[2], 1)} for r in rows]
+    return list(reversed(result))
 
 def get_latest_state():
     conn = sqlite3.connect(DB_PATH)

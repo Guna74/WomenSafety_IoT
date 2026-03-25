@@ -12,7 +12,8 @@ build/
 
 # Env
 .env
-
+venv/
+backend/venv/
 # OS
 .DS_Store
 Thumbs.db

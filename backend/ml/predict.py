@@ -2,71 +2,34 @@ import joblib
 import numpy as np
 import time
 
+# Load the trained Random Forest model
 model = joblib.load("ml/model.pkl")
 
-last_motion_time = 0
-motion_count = 0
+PANIC_KEYWORDS = ["help", "aaaah", "ahhh", "stop", "scream"]
 
-last_help_time = 0
-help_count = 0
-
-
-def detect_gesture(motion):
-    global last_motion_time, motion_count
-    now = time.time()
-
-    if motion > 10:
-        if now - last_motion_time < 3:
-            motion_count += 1
-        else:
-            motion_count = 1
-        last_motion_time = now
-
-    if motion_count >= 2:
-        motion_count = 0
-        return True
-
-    return False
-
-
-def detect_help(word):
-    global last_help_time, help_count
-    now = time.time()
-
-    if word == "help":
-        if now - last_help_time < 5:
-            help_count += 1
-        else:
-            help_count = 1
-        last_help_time = now
-
-    if help_count >= 2:
-        help_count = 0
-        return True
-
-    return False
-
+def get_voice_score(voice_text):
+    if not voice_text:
+        return 0
+    text_lower = voice_text.lower().strip()
+    for word in PANIC_KEYWORDS:
+        if word in text_lower:
+            return 1
+    return 0
 
 def predict_risk(data):
-
-    motion = data["motion"]
-    voice = data.get("voice", "")
-
-    X = np.array([[data["heart_rate"], data["temperature"], motion]])
-    pred = model.predict(X)
-
-    gesture = detect_gesture(motion)
-    panic = detect_help(voice)
-
-    # Immediate emergency if user explicitly signals
-    if gesture or panic:
-        return "EMERGENCY"
-
-    if data["heart_rate"] > 120 and data["motion"] > 2:
-        return "EMERGENCY"
-
-    # Otherwise ML based risk
-    if pred[0] == -1:
-        return "HIGH"
-
-    return "NORMAL"
+    # Extract features from incoming API payload
+    heart_rate = data.get("heart_rate", 80)
+    temperature = data.get("temperature", 36.8)
+    motion = data.get("motion", 1)
+    voice_text = data.get("voice", "")
+    
+    # Preprocess text to numeric score
+    voice_score = get_voice_score(voice_text)
+    
+    # Model expects: [heart_rate, temperature, motion, voice_panic_score]
+    X = np.array([[heart_rate, temperature, motion, voice_score]])
+    
+    # Predict using the trained Random Forest Classifier
+    prediction = model.predict(X)[0]
+    
+    return prediction  # Returns "SAFE", "EXERCISE", or "PANIC"

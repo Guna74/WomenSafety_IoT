@@ -17,7 +17,8 @@ def init_db():
         motion REAL,
         risk TEXT,
         lat REAL,
-        lon REAL
+        lon REAL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """)
 
