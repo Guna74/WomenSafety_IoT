@@ -1,0 +1,314 @@
+:root {
+  --bg-color: #0d0f12;
+  --card-bg: rgba(20, 24, 32, 0.7);
+  --text-primary: #f0f2f5;
+  --text-secondary: #a0aab2;
+  --accent-blue: #3b82f6;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --accent-green: #10b981;
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.1) 0px, transparent 50%);
+  min-height: 100vh;
+}
+
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Panic Mode Globs */
+.dashboard-container.panic-mode {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.3) 0px, transparent 60%),
+    radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.2) 0px, transparent 60%);
+  animation: bg-pulse 2s infinite;
+}
+
+@keyframes bg-pulse {
+  0% { box-shadow: inset 0 0 0px var(--accent-red); }
+  50% { box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.2); }
+  100% { box-shadow: inset 0 0 0px var(--accent-red); }
+}
+
+header.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 15px 25px;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #fff, #a0aab2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.last-updated {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.spin-icon {
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0,0,0,0.3);
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slider-group label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.btn-blue {
+  background: var(--accent-blue);
+}
+.btn-blue:hover {
+  background: #2563eb;
+  transform: scale(1.05);
+}
+
+.btn-red {
+  background: var(--accent-red);
+}
+.btn-red:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.warning-mode {
+  box-shadow: inset 0 0 50px rgba(245, 158, 11, 0.1);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Base Card Styles */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 24px;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Digital Twin UI */
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  background-color: var(--bg-color); /* Dynamically overridden in React */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.twin-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.metric-val {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Panic Alerts */
+.panic-pulse {
+  border-color: var(--accent-red) !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3) !important;
+}
+
+.panic-alert-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--accent-red);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  animation: flash 1s infinite;
+}
+
+@keyframes flash {
+  0% { background: rgba(239, 68, 68, 0.15); }
+  50% { background: rgba(239, 68, 68, 0.3); }
+  100% { background: rgba(239, 68, 68, 0.15); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Advanced Chart UI */
+.chart-tabs {
+  align-items: center;
+}
+.dropdown-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chart-select {
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: 1px solid var(--border-color);
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-family: inherit;
+}
+.tab-group {
+  display: flex;
+  gap: 10px;
+  background: rgba(0,0,0,0.3);
+  padding: 4px;
+  border-radius: 8px;
+}
+.tab-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.tab-btn.active, .tab-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.row-slider {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.row-slider label {
+  font-size: 0.9rem;
+  color: var(--accent-blue);
+}
