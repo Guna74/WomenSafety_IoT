@@ -31,18 +31,18 @@ def get_history(limit=50):
     rows = cur.fetchall()
     conn.close()
 
-    return [{"heart_rate": r[0], "temperature": r[1], "motion": r[2], "risk": r[3], "timestamp": r[4]} for r in rows]
+    return [{"heart_rate": r[0], "temperature": r[1], "motion": r[2], "risk": r[3], "timestamp": f"{r[4]}Z"} for r in rows]
 
 def get_aggregated_history(period="hours"):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
     if period == "hours":
-        sql = "SELECT strftime('%Y-%m-%d %H:00', timestamp) as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 24"
+        sql = "SELECT strftime('%Y-%m-%d %H:00', timestamp, '+5 hours', '+30 minutes') as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 24"
     elif period == "days":
-        sql = "SELECT strftime('%Y-%m-%d', timestamp) as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 30"
+        sql = "SELECT strftime('%Y-%m-%d', timestamp, '+5 hours', '+30 minutes') as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 30"
     elif period == "weeks":
-        sql = "SELECT strftime('%Y-%W', timestamp) as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 12"
+        sql = "SELECT strftime('%Y-%W', timestamp, '+5 hours', '+30 minutes') as time_group, AVG(heart_rate), AVG(motion) FROM data GROUP BY time_group ORDER BY time_group DESC LIMIT 12"
     else:
         conn.close()
         return []
